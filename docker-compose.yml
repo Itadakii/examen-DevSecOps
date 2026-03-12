@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    image: taskflow:latest
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FLASK_RUN_HOST=0.0.0.0  # <--- FORCE L'ÉCOUTE EXTERNE
+    ports:
+      - "5000-5002:5000"        # <--- PERMET LE SCALING SUR 5000, 5001, 5002
+    networks:
+      - taskflow-net
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - taskflow-net
+
+networks:
+  taskflow-net:
+    driver: bridge

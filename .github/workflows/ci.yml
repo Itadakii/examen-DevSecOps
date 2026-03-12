@@ -1,0 +1,49 @@
+name: TaskFlow CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 1. Job de Test : Vérifie que le code fonctionne
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests with pytest
+        run: pytest -v
+
+  # 2. Job de Build : Crée l'image Docker (seulement si les tests passent)
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t taskflow:latest .
+
+  # 3. Job de Security : Scanne l'image pour trouver des failles
+  security:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image for scan
+        run: docker build -t taskflow:latest .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'taskflow:latest'
+          format: 'table'
+          exit-code: '0' # On ne bloque pas le pipeline
+          severity: 'HIGH,CRITICAL'

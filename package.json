@@ -1,0 +1,20 @@
+{
+  "name": "tp0-devsecops",
+  "version": "1.0.0",
+  "description": "TP0 DevSecOps - Premier Pipeline CI/CD",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "keywords": ["devsecops", "cicd"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "supertest": "^6.0.0"
+  }
+}
